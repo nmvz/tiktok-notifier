@@ -1,0 +1,17 @@
+{
+  "name": "tiktok-notifier",
+  "version": "1.0.0",
+  "description": "Discord bot that tracks TikTok accounts for live streams, stories, and posts",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.4.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
