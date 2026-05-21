@@ -1,9 +1,17 @@
 const fs = require('fs');
 const path = require('path');
-
-const DB_PATH = path.join(__dirname, '..', 'data', 'db.json');
-
+ 
+const DATA_DIR = path.join(__dirname, '..', 'data');
+const DB_PATH = path.join(DATA_DIR, 'db.json');
+ 
+function ensureDataDir() {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+}
+ 
 function load() {
+  ensureDataDir();
   if (!fs.existsSync(DB_PATH)) {
     const defaults = { accounts: {}, settings: {} };
     fs.writeFileSync(DB_PATH, JSON.stringify(defaults, null, 2));
@@ -17,23 +25,21 @@ function load() {
     return defaults;
   }
 }
-
+ 
 function save(data) {
+  ensureDataDir();
   fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
 }
-
-// accounts: { username: { channelId, guildId, trackLive, trackStory, trackPost, lastVideoId, lastStoryId, isLive } }
-// settings: { guildId: { defaultChannelId } }
-
+ 
 module.exports = {
   getAccounts() {
     return load().accounts;
   },
-
+ 
   getAccount(username) {
     return load().accounts[username.toLowerCase()] || null;
   },
-
+ 
   addAccount(username, channelId, guildId, options = {}) {
     const db = load();
     const key = username.toLowerCase();
@@ -52,7 +58,7 @@ module.exports = {
     save(db);
     return db.accounts[key];
   },
-
+ 
   removeAccount(username) {
     const db = load();
     const key = username.toLowerCase();
@@ -61,7 +67,7 @@ module.exports = {
     save(db);
     return true;
   },
-
+ 
   updateAccount(username, updates) {
     const db = load();
     const key = username.toLowerCase();
@@ -70,13 +76,14 @@ module.exports = {
     save(db);
     return db.accounts[key];
   },
-
+ 
   listAccounts(guildId) {
     const db = load();
     return Object.values(db.accounts).filter(a => a.guildId === guildId);
   },
-
+ 
   setChannel(username, channelId) {
     return this.updateAccount(username, { channelId });
   },
 };
+ 
